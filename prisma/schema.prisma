@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  AUTHORITY
+  VENDOR_MANAGER
+  VENDOR
+}
+
+enum WorkOrderStatus {
+  OPEN
+  READY_FOR_OFFICE
+  COMPLETED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String?
+  name         String
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  assignedWorkOrders WorkOrder[] @relation("AssignedVendor")
+}
+
+model WorkOrder {
+  id              String          @id @default(cuid())
+  workOrderNumber String          @unique
+  title           String
+  address         String
+  instructions    String
+  status          WorkOrderStatus @default(OPEN)
+  pdfPath         String?
+  pdfName         String?
+  driveFolderId   String?
+  driveFolderUrl  String?
+  vendorNotes     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  vendorId String?
+  vendor   User?  @relation("AssignedVendor", fields: [vendorId], references: [id])
+
+  lineItems WorkOrderLineItem[]
+  uploads   Upload[]
+}
+
+model WorkOrderLineItem {
+  id           String  @id @default(cuid())
+  description  String
+  price        Float
+  instructions String?
+
+  workOrderId String
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id                  String   @id @default("singleton")
+  driveFolderLink     String?
+  googleClientId      String?
+  googleClientSecret  String?
+  googleRefreshToken  String?
+  nextWorkOrderNumber Int      @default(1)
+  companyName         String?
+  supportContact      String?
+  updatedAt           DateTime @updatedAt
+}
+
+model Upload {
+  id         String   @id @default(cuid())
+  fileName   String
+  path       String
+  driveFileId String?
+  uploadedAt DateTime @default(now())
+
+  workOrderId String
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+}
