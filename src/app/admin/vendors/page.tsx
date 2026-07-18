@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NewUserForm } from "@/components/NewUserForm";
+import { UserListTable } from "@/components/UserListTable";
 
 export default async function VendorsPage() {
   const vendors = await prisma.user.findMany({
@@ -18,26 +19,20 @@ export default async function VendorsPage() {
       {vendors.length === 0 ? (
         <p className="text-sm text-neutral-500">No vendors yet.</p>
       ) : (
-        <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
-          <table className="w-full text-sm">
-            <thead className="bg-neutral-50 text-left text-neutral-500">
-              <tr>
-                <th className="px-4 py-2 font-medium">Name</th>
-                <th className="px-4 py-2 font-medium">Username</th>
-                <th className="px-4 py-2 font-medium">Assigned Work Orders</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vendors.map((v) => (
-                <tr key={v.id} className="border-t border-neutral-100">
-                  <td className="px-4 py-3">{v.name}</td>
-                  <td className="px-4 py-3">{v.username}</td>
-                  <td className="px-4 py-3">{v._count.assignedWorkOrders}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <UserListTable
+          users={vendors.map((v) => ({
+            id: v.id,
+            name: v.name,
+            username: v.username,
+            email: v.email,
+            phone: v.phone,
+            address: v.address,
+            assignedWorkOrderCount: v._count.assignedWorkOrders,
+          }))}
+          entityLabel="Vendor"
+          deleteEndpointBase="/api/vendors"
+          showAssignedCount
+        />
       )}
     </div>
   );

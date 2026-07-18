@@ -26,6 +26,7 @@ export function WorkOrderForm({
   };
 }) {
   const router = useRouter();
+  const [workOrderNumber, setWorkOrderNumber] = useState("");
   const [title, setTitle] = useState(initial?.title ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
   const [instructions, setInstructions] = useState(initial?.instructions ?? "");
@@ -59,6 +60,7 @@ export function WorkOrderForm({
     setSaving(true);
 
     const formData = new FormData();
+    if (mode === "create") formData.set("workOrderNumber", workOrderNumber);
     formData.set("title", title);
     formData.set("address", address);
     formData.set("instructions", instructions);
@@ -104,6 +106,19 @@ export function WorkOrderForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+      {mode === "create" && (
+        <div>
+          <label className="block text-sm font-medium mb-1">Work Order Number</label>
+          <input
+            required
+            value={workOrderNumber}
+            onChange={(e) => setWorkOrderNumber(e.target.value)}
+            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm font-mono"
+            placeholder="e.g. WO-0001"
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Title</label>

@@ -33,15 +33,15 @@ export default async function ViewWorkOrderPage({
   const total = workOrder.lineItems.reduce((sum, li) => sum + li.price, 0);
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-8">
       <div>
         <Link href="/admin" className="text-sm text-neutral-500 hover:text-neutral-900">
           ← Work Orders
         </Link>
       </div>
 
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-6">
+        <div className="space-y-3">
           <div className="flex items-center gap-3">
             <span className="inline-block rounded bg-neutral-900 text-white text-xs font-mono font-semibold px-2 py-1">
               {workOrder.workOrderNumber}
@@ -53,10 +53,12 @@ export default async function ViewWorkOrderPage({
               {statusLabels[workOrder.status]}
             </span>
           </div>
-          <p className="text-sm text-neutral-500">{workOrder.address}</p>
-          <p className="text-sm text-neutral-500 mt-1">
-            Vendor: {workOrder.vendor ? `${workOrder.vendor.name} (${workOrder.vendor.username})` : "Unassigned"}
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm text-neutral-500">{workOrder.address}</p>
+            <p className="text-sm text-neutral-500">
+              Vendor: {workOrder.vendor ? `${workOrder.vendor.name} (${workOrder.vendor.username})` : "Unassigned"}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {workOrder.status === "READY_FOR_OFFICE" && (
@@ -80,14 +82,14 @@ export default async function ViewWorkOrderPage({
         </div>
       </div>
 
-      <div className="border border-neutral-200 rounded-lg bg-white p-4">
-        <h2 className="text-sm font-medium mb-2">Property Information</h2>
+      <div className="border border-neutral-200 rounded-lg bg-white p-5">
+        <h2 className="text-sm font-medium mb-3">Property Information</h2>
         <p className="text-sm whitespace-pre-wrap text-neutral-700">{workOrder.instructions}</p>
       </div>
 
       {workOrder.pdfPath && (
-        <div className="border border-neutral-200 rounded-lg bg-white p-4">
-          <h2 className="text-sm font-medium mb-2">Instruction PDF</h2>
+        <div className="border border-neutral-200 rounded-lg bg-white p-5">
+          <h2 className="text-sm font-medium mb-3">Instruction PDF</h2>
           <a
             href={`/api/work-orders/${workOrder.id}/pdf`}
             target="_blank"
@@ -98,8 +100,8 @@ export default async function ViewWorkOrderPage({
         </div>
       )}
 
-      <div className="border border-neutral-200 rounded-lg bg-white p-4">
-        <h2 className="text-sm font-medium mb-2">Work &amp; Pricing</h2>
+      <div className="border border-neutral-200 rounded-lg bg-white p-5">
+        <h2 className="text-sm font-medium mb-3">Work &amp; Pricing</h2>
         <div className="divide-y divide-neutral-100">
           {workOrder.lineItems.map((li) => (
             <div key={li.id} className="py-2">
@@ -122,14 +124,14 @@ export default async function ViewWorkOrderPage({
       </div>
 
       {workOrder.vendorNotes && (
-        <div className="border border-neutral-200 rounded-lg bg-white p-4">
-          <h2 className="text-sm font-medium mb-2">Vendor Notes / Comments</h2>
+        <div className="border border-neutral-200 rounded-lg bg-white p-5">
+          <h2 className="text-sm font-medium mb-3">Vendor Notes / Comments</h2>
           <p className="text-sm whitespace-pre-wrap text-neutral-700">{workOrder.vendorNotes}</p>
         </div>
       )}
 
-      <div className="border border-neutral-200 rounded-lg bg-white p-4">
-        <h2 className="text-sm font-medium mb-2">
+      <div className="border border-neutral-200 rounded-lg bg-white p-5">
+        <h2 className="text-sm font-medium mb-3">
           Photos / Documents ({workOrder.uploads.length})
         </h2>
         {workOrder.driveFolderUrl && (

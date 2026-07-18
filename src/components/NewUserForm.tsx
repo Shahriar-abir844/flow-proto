@@ -14,6 +14,9 @@ export function NewUserForm({
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
@@ -26,7 +29,14 @@ export function NewUserForm({
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, username, password }),
+      body: JSON.stringify({
+        name,
+        username,
+        password,
+        email: email || null,
+        phone: phone || null,
+        address: address || null,
+      }),
     });
 
     setSaving(false);
@@ -40,6 +50,9 @@ export function NewUserForm({
     setName("");
     setUsername("");
     setPassword("");
+    setEmail("");
+    setPhone("");
+    setAddress("");
     setOpen(false);
     router.refresh();
   };
@@ -86,6 +99,39 @@ export function NewUserForm({
           type="text"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Email <span className="text-neutral-400 font-normal">(optional)</span>
+        </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Phone <span className="text-neutral-400 font-normal">(optional)</span>
+        </label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Address <span className="text-neutral-400 font-normal">(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
         />
       </div>
