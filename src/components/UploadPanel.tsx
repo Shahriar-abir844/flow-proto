@@ -23,6 +23,7 @@ export function UploadPanel({
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState("");
   const dragCounter = useRef(0);
 
   const createFolder = async () => {
@@ -78,18 +79,31 @@ export function UploadPanel({
     setUploading(true);
     setError("");
 
-    const formData = new FormData();
-    stagedFiles.forEach((f) => formData.append("files", f));
-
-    const res = await fetch(`/api/work-orders/${workOrderId}/uploads`, {
-      method: "POST",
-      body: formData,
-    });
+    // Uploaded one at a time rather than as one big multipart request —
+    // Netlify's serverless functions reject large request bodies, so
+    // batching many photos together fails even though each one is fine
+    // on its own.
+    const failed: File[] = [];
+    for (let i = 0; i < stagedFiles.length; i++) {
+      setUploadProgress(`Uploading ${i + 1} of ${stagedFiles.length}...`);
+      const formData = new FormData();
+      formData.append("files", stagedFiles[i]);
+      const res = await fetch(`/api/work-orders/${workOrderId}/uploads`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) failed.push(stagedFiles[i]);
+    }
 
     setUploading(false);
+    setUploadProgress("");
 
-    if (!res.ok) {
-      setError("Upload failed. Try again.");
+    if (failed.length > 0) {
+      setStagedFiles(failed);
+      setError(
+        `${failed.length} file${failed.length === 1 ? "" : "s"} failed to upload. Try again.`
+      );
+      router.refresh();
       return;
     }
 
@@ -206,7 +220,7 @@ export function UploadPanel({
             className="rounded-md bg-neutral-900 text-white text-sm px-4 py-2 hover:bg-neutral-800 disabled:opacity-50"
           >
             {uploading
-              ? "Uploading..."
+              ? uploadProgress || "Uploading..."
               : `Upload ${stagedFiles.length} file${stagedFiles.length === 1 ? "" : "s"}`}
           </button>
         </div>
